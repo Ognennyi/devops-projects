@@ -1,0 +1,52 @@
+stages:
+  - build
+  - style
+  - test
+  - notify
+  - deploy
+
+build-job:
+  stage: build
+  script:
+    - cd code-samples
+    - make
+    - mkdir -p ../build
+    - cp DO ../build/
+  artifacts:
+    paths:
+      - build/
+    expire_in: 30 days 
+
+style-job:
+  stage: style
+  script:
+    - cp materials/linters/.clang-format code-samples/.clang-format
+    - clang-format --dry-run --Werror -style=file code-samples/main.c
+
+test-job:
+  stage: test
+  script:
+    - pytest src/test.py
+
+deploy-job:
+  stage: deploy
+  script:
+    - bash src/deploy.sh
+    - bash src/notify.sh "CD SUCCESS"
+  after_script:
+    - if [ "$CI_JOB_STATUS" != "success" ]; then bash src/notify.sh "CD FAILED"; fi 
+  when: manual
+  dependencies:
+    - build-job
+
+notify-ci-success:
+  stage: notify
+  script:
+    - bash src/notify.sh "CI SUCCESS"
+  when: on_success
+
+notify-ci-failure:
+  stage: notify
+  script:
+    - bash src/notify.sh "CI FAILED"
+  when: on_failure

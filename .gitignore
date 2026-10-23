@@ -1,0 +1,30 @@
+# Compiled files
+*.o
+*.a
+*.so
+*.exe
+*.out
+
+# Build
+CICD/code-samples/DO
+CICD/build/
+SimpleDocker/src/server
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+telegram.env
+
+# IDE
+.idea/
+.vscode/
+
+# System files
+.DS_Store
+Thumbs.db
